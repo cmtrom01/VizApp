@@ -1,15 +1,16 @@
 # This is a sample Python script.
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import UIHandler as GUI
 
+def launch_user_interface():
+    GUI.launch_user_interface()
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+def set_user_settings(user_settings):
+    user_settings['UI'] = True
 
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    user_settings = dict()
+    set_user_settings(user_settings)
+    launch_user_interface()
+    print('finished running successfully')
 
