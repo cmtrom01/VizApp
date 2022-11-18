@@ -1,11 +1,8 @@
 # This is a sample Python script.
 
-import UIHandler as GUI
+from UIHandler import UIHandler
 
 #"C:\Users\tromb\Downloads\Dataset (1)\Dataset\20200121\312\summary.csv"
-
-def launch_user_interface():
-    GUI.launch_user_interface()
 
 def set_user_settings(user_settings):
     user_settings['UI'] = True
@@ -13,6 +10,7 @@ def set_user_settings(user_settings):
 if __name__ == '__main__':
     user_settings = dict()
     set_user_settings(user_settings)
-    launch_user_interface()
+    app = UIHandler()
+    app.mainloop()
     print('finished running successfully')
 
