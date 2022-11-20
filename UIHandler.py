@@ -7,7 +7,8 @@ import Dataset as ds
 import pandas as pd
 from tkinter import *
 from matplotlib.figure import Figure
-from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+import matplotlib.pyplot as plt
 
 class UIHandler(tk.Tk):
     def __init__(self):
@@ -17,32 +18,55 @@ class UIHandler(tk.Tk):
         print('launching user interface')
 
         self.title("VizApp")
-        self.geometry('400x600')
+        self.geometry('800x1000')
 
         # create a notebook
         self.notebook = ttk.Notebook(self)
         self.notebook.pack(pady=10, expand=True)
 
         # create frames
-        self.frame1 = ttk.Frame(self.notebook, width=400, height=280)
-        self.frame2 = ttk.Frame(self.notebook, width=400, height=280)
-        self.frame3 = ttk.Frame(self.notebook, width=400, height=280)
-        self.frame4 = ttk.Frame(self.notebook, width=400, height=280)
-        self.frame5 = ttk.Frame(self.notebook, width=400, height=280)
+        self.frame1 = ttk.Frame(self.notebook, width=1200, height=1200)
+        self.frame2 = ttk.Frame(self.notebook, width=1200, height=1200)
+        self.frame3 = ttk.Frame(self.notebook, width=1200, height=1200)
+        self.frame4 = ttk.Frame(self.notebook, width=1200, height=1200)
+        self.frame5 = ttk.Frame(self.notebook, width=1200, height=1200)
+        self.frame6 = ttk.Frame(self.notebook, width=1200, height=1200)
 
         self.frame1.pack(fill='both', expand=True)
         self.frame2.pack(fill='both', expand=True)
         self.frame3.pack(fill='both', expand=True)
         self.frame4.pack(fill='both', expand=True)
         self.frame5.pack(fill='both', expand=True)
+        self.frame6.pack(fill='both', expand=True)
+
+        self.container = self.frame3
+        self.canvas = tk.Canvas(self.container)
+        self.scrollbar = ttk.Scrollbar(self.container, orient="vertical", command=self.canvas.yview)
+        self.scrollable_frame = ttk.Frame(self.canvas)
+
+        self.scrollable_frame.bind(
+            "<Configure>",
+            lambda e: self.canvas.configure(
+                scrollregion=self.canvas.bbox("all")
+            )
+        )
+
+        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+
+        self.canvas.configure(yscrollcommand=self.scrollbar.set)
+
+        self.container.pack()
+        self.canvas.pack(side="left", fill="both", expand=True)
+        self.scrollbar.pack(side="right", fill="y")
 
         # add frames to notebook
 
         self.notebook.add(self.frame1, text='Import file')
         self.notebook.add(self.frame2, text='Choose Data')
         self.notebook.add(self.frame3, text='Plot')
-        self.notebook.add(self.frame4, text='Correlation')
-        self.notebook.add(self.frame5, text='Visual Mining')
+        self.notebook.add(self.frame4, text='Description')
+        self.notebook.add(self.frame5, text='Correlation')
+        self.notebook.add(self.frame6, text='Visual Mining')
 
         self.fpath_label = ttk.Label(self.frame1, text="Enter file name:")
         self.fpath_label.pack()
@@ -74,10 +98,41 @@ class UIHandler(tk.Tk):
         self.error_label_columns = ttk.Label(self.frame2, text="Error:")
         self.error_label_columns.pack()
 
+        self.color_id = 0
+        self.color_array = ['b', 'g', 'r', 'c', 'm','k']
+
     def graph_data_clicked_event(self):
         print('graphing')
         self.dataEventHandler.set_current_columns(self.columns)
-        self.dataEventHandler.graph_data()
+
+        df = self.dataEventHandler.get_dataset()
+
+        for col in self.columns:
+            if col != 'Datetime (UTC)' and col != 'Unix Timestamp (UTC)' and col != 'Timezone (minutes)':
+                print(col)
+
+                y = df[str(col)]
+                x = df['Datetime (UTC)']
+                print('plotting following values')
+                print(x)
+                print('----------------------')
+                print(y)
+
+                fig = plt.figure(figsize=(8, 3))
+                plt.plot_date(pd.to_datetime(x), y, '-', color=self.color_array[self.color_id%6])
+                self.color_id += 1
+
+                # specify the window as master
+                canvas = FigureCanvasTkAgg(fig, master=self.scrollable_frame)
+
+
+                # navigation toolbar
+                toolbarFrame = tk.Frame(self.scrollable_frame)
+                toolbar = NavigationToolbar2Tk(canvas, toolbarFrame)
+                canvas.draw()
+                canvas.get_tk_widget().pack()
+                toolbarFrame.pack()
+
     def add_column_clicked_event(self):
         self.columns = []
         for i in self.list_box_available_columns.curselection():
@@ -131,6 +186,9 @@ class UIHandler(tk.Tk):
         ##select columns
         ##data loaded in
         ##graph data with widget
+
+
+
 
     def populate_columns(self):
         columns = self.dataEventHandler.get_columns()

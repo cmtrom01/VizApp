@@ -1,12 +1,16 @@
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 import pandas as pd
 from Dataset import Dataset
 from dateutil import parser
+import matplotlib as plt
 
 class DataEventHandler:
     def __init__(self):
         self.dataset = Dataset()
 
+    def get_dataset(self):
+        return self.dataset.get_dataframe()
     def set_dataset(self, fpath):
         self.dataset.set_fpath(fpath)
         print(self.dataset)
@@ -32,8 +36,7 @@ class DataEventHandler:
         columns = self.dataset.get_current_columns()
         df = self.dataset.get_dataframe()
 
-        for col in columns:
-            print(col)
+
         ##get columns
         ##plot graph for each column
 

@@ -13,7 +13,7 @@ class Dataset:
         self.step = 5
         self.first_directory = None
         self.second_directory = None
-        self.current_columns = []
+        self.current_columns = ['Datetime (UTC)', 'Unix Timestamp (UTC)']
 
     def get_first_level_folders(self):
         print('Getting first level folders...')
@@ -39,7 +39,8 @@ class Dataset:
         return return_array
 
     def set_current_columns(self, columns):
-        self.current_columns = columns
+        for col in columns:
+            self.current_columns.append(col)
         self.dataframe = pd.read_csv(self.fpath + self.first_directory + '//' + self.second_directory + "//summary.csv", usecols=self.current_columns)
         print(self.dataframe)
 
