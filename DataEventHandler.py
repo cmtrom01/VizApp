@@ -1,9 +1,5 @@
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from matplotlib.figure import Figure
-import pandas as pd
 from Dataset import Dataset
-from dateutil import parser
-import matplotlib as plt
+import numpy as np
 
 class DataEventHandler:
     def __init__(self):
@@ -36,74 +32,15 @@ class DataEventHandler:
         columns = self.dataset.get_current_columns()
         df = self.dataset.get_dataframe()
 
-
-        ##get columns
-        ##plot graph for each column
-
     def set_current_columns(self, columns):
         self.dataset.set_current_columns(columns)
 
-    '''
-    def get_dataframe():
-        return dataset.get_dataframe()
-    
-    def switch_times():
-        time = dataset.get_time()
-        if time == 'UTC':
-            dataset.set_time('EST')
-        else:
-            dataset.set_time('UTC')
-    
-    def get_graph_figure(fig):
-        df = dataset.get_dataframe()
-        values_to_plot = df['Acc magnitude avg']
-        time = dataset.get_time()
-        if time == 'UTC':
-            time = df['Datetime (UTC)']
-            plot1 = fig.add_subplot(111)
-            plot1.plot_date(pd.to_datetime(time), values_to_plot)
-        else:
-            time = pd.to_datetime(df['Datetime (UTC)']).dt.tz_convert('US/Central')
-            plot1 = fig.add_subplot(111)
-            plot1.plot_date(time, values_to_plot)
-        return fig
-    
-    def get_correlation():
-        df = dataset.get_dataframe()
-        cor = df['Acc magnitude avg'].corr(df['Unix Timestamp (UTC)'])
-        return cor
-    
-    def zoom_in(fig):
-        dataset.increment_idx()
-        start_idx = dataset.get_start_idx()
-        end_idx = dataset.get_end_idx()
-        df = dataset.get_dataframe()
-        values_to_plot = df['Acc magnitude avg']
-        time = dataset.get_time()
-        if time == 'UTC':
-            time = df['Datetime (UTC)']
-            plot1 = fig.add_subplot(111)
-            plot1.plot_date(pd.to_datetime(time)[start_idx:end_idx], values_to_plot[start_idx:end_idx])
-        else:
-            time = pd.to_datetime(df['Datetime (UTC)']).dt.tz_convert('US/Central')
-            plot1 = fig.add_subplot(111)
-            plot1.plot_date(time[start_idx:end_idx], values_to_plot[start_idx:end_idx])
-        return fig
-    
-    def zoom_out(fig):
-        dataset.decrement_idx()
-        start_idx = dataset.get_start_idx()
-        end_idx = dataset.get_end_idx()
-        df = dataset.get_dataframe()
-        values_to_plot = df['Acc magnitude avg']
-        time = dataset.get_time()
-        if time == 'UTC':
-            time = df['Datetime (UTC)']
-            plot1 = fig.add_subplot(111)
-            plot1.plot_date(pd.to_datetime(time)[start_idx:end_idx], values_to_plot[start_idx:end_idx])
-        else:
-            time = pd.to_datetime(df['Datetime (UTC)']).dt.tz_convert('US/Central')
-            plot1 = fig.add_subplot(111)
-            plot1.plot_date(time[start_idx:end_idx], values_to_plot[start_idx:end_idx])
-        return fig
-    '''
+    def get_statistics_for_data(self, data):
+        statistics_dic = {}
+        df = self.dataset.get_dataframe()
+        for i in df:
+            if i == data:
+                statistics_dic["mean"] = np.mean(np.array(df[i]))
+                statistics_dic["std"] = np.std(np.array(df[i]))
+
+        return statistics_dic

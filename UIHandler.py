@@ -1,12 +1,10 @@
-import Dataset
+import numpy as np
+
 from DataEventHandler import DataEventHandler
 import tkinter as tk
 from tkinter import ttk
-from tkinter import *
-import Dataset as ds
 import pandas as pd
 from tkinter import *
-from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 import matplotlib.pyplot as plt
 
@@ -31,6 +29,7 @@ class UIHandler(tk.Tk):
         self.frame4 = ttk.Frame(self.notebook, width=1200, height=1200)
         self.frame5 = ttk.Frame(self.notebook, width=1200, height=1200)
         self.frame6 = ttk.Frame(self.notebook, width=1200, height=1200)
+        self.frame7 = ttk.Frame(self.notebook, width=1200, height=1200)
 
         self.frame1.pack(fill='both', expand=True)
         self.frame2.pack(fill='both', expand=True)
@@ -38,6 +37,7 @@ class UIHandler(tk.Tk):
         self.frame4.pack(fill='both', expand=True)
         self.frame5.pack(fill='both', expand=True)
         self.frame6.pack(fill='both', expand=True)
+        self.frame7.pack(fill='both', expand=True)
 
         self.container = self.frame3
         self.canvas = tk.Canvas(self.container)
@@ -67,6 +67,7 @@ class UIHandler(tk.Tk):
         self.notebook.add(self.frame4, text='Description')
         self.notebook.add(self.frame5, text='Correlation')
         self.notebook.add(self.frame6, text='Visual Mining')
+        self.notebook.add(self.frame7, text='Time Settings')
 
         self.fpath_label = ttk.Label(self.frame1, text="Enter file name:")
         self.fpath_label.pack()
@@ -98,12 +99,83 @@ class UIHandler(tk.Tk):
         self.error_label_columns = ttk.Label(self.frame2, text="Error:")
         self.error_label_columns.pack()
 
+        self.time_text_label = ttk.Label(self.frame7, text="Current Time Format:")
+        self.time_text_label.pack()
+        self.time_label = ttk.Label(self.frame7, text="UTC")
+        self.time_label.pack()
+        self.switch_time_button = ttk.Button(self.frame7, text="Switch Time Format", command=self.switch_time)
+        self.switch_time_button.pack()
+        self.sync_time_button = ttk.Button(self.frame7, text="Sync Time Across Plots ", command=self.sync_time)
+        self.sync_time_button.pack()
+
+        self.variable = StringVar(self.frame4)
+        self.variable.set("Select Data")  # default value
+        self.description_option_menu = None
+        self.description_button = None
+        self.description_label = None
+        self.corr_value_label = None
+
+
+
         self.color_id = 0
         self.color_array = ['b', 'g', 'r', 'c', 'm','k']
+
+    def switch_time(self):
+        print('switching')
+
+    def sync_time(self):
+        print('syncin')
+    def self_description_button_clicked_event(self):
+        data = self.dataEventHandler.get_statistics_for_data(self.variable.get())
+
+        text_str = "Mean: " + str(data['mean']) + "\n" + "Std dev: " + str(data["std"])
+        self.description_label = ttk.Label(self.frame4, text=text_str)
+        self.description_label.pack()
+
+
+    def self_correlation_button_clicked_event(self):
+        df = self.dataEventHandler.get_dataset()
+        print(df)
+        print(self.correlation_option_menu.get(0))
+        print(np.array(df[self.correlation_option_menu.get(0)]))
+        cor = np.correlate(np.array(df[self.correlation_option_menu.get(0)]), np.array(df[self.correlation_option_menu.get(1)]))
+        self.corr_value_label = ttk.Label(self.frame5, text=str(cor))
+        self.corr_value_label.pack()
+
 
     def graph_data_clicked_event(self):
         print('graphing')
         self.dataEventHandler.set_current_columns(self.columns)
+        self.description_option_menu = OptionMenu(self.frame4, self.variable, *self.columns)
+        self.description_option_menu.pack()
+
+        #self.correlation_option_menu = OptionMenu(self.frame5, self.variable, *self.columns)
+        #self.correlation_option_menu.pack()
+
+        self.correlation_option_menu = Listbox(self.frame5, width=40, height=10, selectmode=MULTIPLE)
+
+        counter = 0
+
+        for col in self.columns:
+            self.correlation_option_menu.insert(counter, col)
+            counter = counter + 1
+
+        self.correlation_option_menu.pack()
+
+        self.correlation_button = ttk.Button(self.frame5, text="Get Correlation", command=self.self_correlation_button_clicked_event)
+        self.correlation_button.pack()
+
+        self.description_label_agg = ttk.Label(self.frame4, text="Aggregate by date: (Enter in form mm-dd-yyyy until mm-dd-yyyy)")
+        self.description_label_agg.pack()
+        self.agg_entry_one = ttk.Entry(self.frame4, width=10)
+        self.agg_entry_one.pack()
+        self.description_label_hyp = ttk.Label(self.frame4, text="until")
+        self.description_label_hyp.pack()
+        self.agg_entry_two =  ttk.Entry(self.frame4, width=10)
+        self.agg_entry_two.pack()
+
+        self.description_button = ttk.Button(self.frame4, text="Get Description", command=self.self_description_button_clicked_event)
+        self.description_button.pack()
 
         df = self.dataEventHandler.get_dataset()
 
@@ -132,6 +204,8 @@ class UIHandler(tk.Tk):
                 canvas.draw()
                 canvas.get_tk_widget().pack()
                 toolbarFrame.pack()
+
+
 
     def add_column_clicked_event(self):
         self.columns = []
@@ -183,12 +257,6 @@ class UIHandler(tk.Tk):
     def load_data(self):
         print('loading data')
         self.populate_columns()
-        ##select columns
-        ##data loaded in
-        ##graph data with widget
-
-
-
 
     def populate_columns(self):
         columns = self.dataEventHandler.get_columns()

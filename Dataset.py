@@ -84,14 +84,6 @@ class Dataset:
             return self.fpath
     def set_fpath(self, fpath):
         self.fpath = fpath
-        '''
-        try:
-            self.dataframe = pd.read_csv(fpath)
-            self.end_idx = len(self.dataframe['Datetime (UTC)'])
-        except:
-            print("Exception loading fpath as dataframe")
-            self.dataframe = None
-        '''
 
     def get_dataframe(self):
         if self.dataframe is None:

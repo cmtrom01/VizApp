@@ -1,4 +1,9 @@
-# This is a sample Python script.
+## This is a sample Python script.
+## Description & Agg
+## Time box, switch, and sync
+## Corrleation Analysis
+## Visual Mining for Patterns
+## Debug and user proof
 
 from UIHandler import UIHandler
 
