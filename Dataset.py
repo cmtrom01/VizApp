@@ -5,7 +5,7 @@ class Dataset:
     def __init__(self, fpath=None):
         self.fpath = fpath
         self.dataframe = None
-        self.time = 'EST'
+        self.time = 'Datetime (UTC)'
         self.start_idx = 0
         self.end_idx = None
         self.min = 0
@@ -25,8 +25,16 @@ class Dataset:
 
     def set_first_directory(self, first_directory):
         self.first_directory = first_directory
+
+    def switch_time(self):
+        if self.time == 'Datetime (UTC)':
+            self.time = 'Unix Timestamp (UTC)'
+        else:
+            self.time = 'Datetime (UTC)'
+
     def set_second_directory(self, second_directory):
         self.second_directory = second_directory
+
     def get_first_directory(self):
         return self.first_directory
 
@@ -54,17 +62,20 @@ class Dataset:
 
     def get_start_idx(self):
         return self.start_idx
+
     def get_end_idx(self):
         return self.end_idx
 
     def set_start_idx(self, start_idx):
         self.start_idx = start_idx
+
     def set_end_idx(self, end_idx):
         self.end_idx = end_idx
 
     def increment_idx(self):
         self.start_idx = self.start_idx + self.step
         self.end_idx = self.end_idx - self.step
+
     def decrement_idx(self):
         self.start_idx = self.start_idx - self.step
         self.max = self.end_idx = self.end_idx + self.step
@@ -77,11 +88,13 @@ class Dataset:
 
     def set_time(self, time):
         self.time = time
+
     def get_fpath(self, fpath):
         if self.fpath is None:
             return None
         else:
             return self.fpath
+
     def set_fpath(self, fpath):
         self.fpath = fpath
 

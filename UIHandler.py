@@ -1,5 +1,4 @@
 import numpy as np
-
 from DataEventHandler import DataEventHandler
 import tkinter as tk
 from tkinter import ttk
@@ -18,11 +17,9 @@ class UIHandler(tk.Tk):
         self.title("VizApp")
         self.geometry('800x1000')
 
-        # create a notebook
         self.notebook = ttk.Notebook(self)
         self.notebook.pack(pady=10, expand=True)
 
-        # create frames
         self.frame1 = ttk.Frame(self.notebook, width=1200, height=1200)
         self.frame2 = ttk.Frame(self.notebook, width=1200, height=1200)
         self.frame3 = ttk.Frame(self.notebook, width=1200, height=1200)
@@ -58,8 +55,6 @@ class UIHandler(tk.Tk):
         self.container.pack()
         self.canvas.pack(side="left", fill="both", expand=True)
         self.scrollbar.pack(side="right", fill="y")
-
-        # add frames to notebook
 
         self.notebook.add(self.frame1, text='Import file')
         self.notebook.add(self.frame2, text='Choose Data')
@@ -115,20 +110,23 @@ class UIHandler(tk.Tk):
         self.description_label = None
         self.corr_value_label = None
 
-
-
         self.color_id = 0
         self.color_array = ['b', 'g', 'r', 'c', 'm','k']
 
     def switch_time(self):
         print('switching')
+        self.dataEventHandler.switch_time()
+        self.replot()
+
 
     def sync_time(self):
         print('syncin')
+        self.replot()
+
     def self_description_button_clicked_event(self):
         data = self.dataEventHandler.get_statistics_for_data(self.variable.get())
 
-        text_str = "Mean: " + str(data['mean']) + "\n" + "Std dev: " + str(data["std"])
+        text_str = "Data description for: " + str(self.variable.get()) + "\n" + "Mean: " + str(data['mean']) + "\n" + "Std dev: " + str(data["std"])
         self.description_label = ttk.Label(self.frame4, text=text_str)
         self.description_label.pack()
 
@@ -142,6 +140,39 @@ class UIHandler(tk.Tk):
         self.corr_value_label = ttk.Label(self.frame5, text=str(cor))
         self.corr_value_label.pack()
 
+    def replot(self):
+        print('replotting')
+
+        for widget in self.scrollable_frame.winfo_children():
+            widget.destroy()
+
+        df = self.dataEventHandler.get_dataset()
+
+        for col in self.columns:
+            if col != 'Datetime (UTC)' and col != 'Unix Timestamp (UTC)' and col != 'Timezone (minutes)':
+                print(col)
+
+                y = df[str(col)]
+                x = df[self.dataEventHandler.get_time()]
+                print('plotting following values')
+                print(x)
+                print('----------------------')
+                print(y)
+
+                fig = plt.figure(figsize=(8, 3))
+                plt.plot_date(pd.to_datetime(x), y, '-', color=self.color_array[self.color_id%6])
+                self.color_id += 1
+
+                # specify the window as master
+                canvas = FigureCanvasTkAgg(fig, master=self.scrollable_frame)
+
+
+                # navigation toolbar
+                toolbarFrame = tk.Frame(self.scrollable_frame)
+                toolbar = NavigationToolbar2Tk(canvas, toolbarFrame)
+                canvas.draw()
+                canvas.get_tk_widget().pack()
+                toolbarFrame.pack()
 
     def graph_data_clicked_event(self):
         print('graphing')
