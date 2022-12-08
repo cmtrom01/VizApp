@@ -5,7 +5,7 @@ class Dataset:
     def __init__(self, fpath=None):
         self.fpath = fpath
         self.dataframe = None
-        self.time = 'Datetime (UTC)'
+        self.time = 'UTC'
         self.start_idx = 0
         self.end_idx = None
         self.min = 0
@@ -16,10 +16,8 @@ class Dataset:
         self.current_columns = ['Datetime (UTC)', 'Unix Timestamp (UTC)']
 
     def get_first_level_folders(self):
-        print('Getting first level folders...')
         return_array = []
         for dir in os.listdir(self.fpath):
-            print(dir)
             return_array.append(dir)
         return return_array
 
@@ -27,10 +25,10 @@ class Dataset:
         self.first_directory = first_directory
 
     def switch_time(self):
-        if self.time == 'Datetime (UTC)':
-            self.time = 'Unix Timestamp (UTC)'
+        if self.time == 'UTC':
+            self.time = 'Local'
         else:
-            self.time = 'Datetime (UTC)'
+            self.time = 'UTC'
 
     def set_second_directory(self, second_directory):
         self.second_directory = second_directory
@@ -39,7 +37,6 @@ class Dataset:
         return self.first_directory
 
     def get_second_level_folders(self):
-        print('Getting first level folders...')
         return_array = []
         for root, dirs, files in os.walk(self.fpath + self.first_directory + '//', topdown=False):
             for name in dirs:
@@ -50,14 +47,12 @@ class Dataset:
         for col in columns:
             self.current_columns.append(col)
         self.dataframe = pd.read_csv(self.fpath + self.first_directory + '//' + self.second_directory + "//summary.csv", usecols=self.current_columns)
-        print(self.dataframe)
 
     def get_current_columns(self):
         return self.current_columns
 
     def get_columns(self):
         df = pd.read_csv(self.fpath + self.first_directory + '//' + self.second_directory + "//summary.csv")
-        print(df.columns.values.tolist())
         return df.columns.values.tolist()
 
     def get_start_idx(self):

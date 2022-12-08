@@ -13,7 +13,6 @@ class DataEventHandler:
 
     def set_dataset(self, fpath):
         self.dataset.set_fpath(fpath)
-        print(self.dataset)
 
     def get_first_level_folders(self):
         return self.dataset.get_first_level_folders()
@@ -36,11 +35,6 @@ class DataEventHandler:
     def get_columns(self):
         return self.dataset.get_columns()
 
-    def graph_data(self):
-        print('hey')
-        columns = self.dataset.get_current_columns()
-        df = self.dataset.get_dataframe()
-
     def set_current_columns(self, columns):
         self.dataset.set_current_columns(columns)
 
@@ -51,5 +45,7 @@ class DataEventHandler:
             if i == data:
                 statistics_dic["mean"] = np.mean(np.array(df[i]))
                 statistics_dic["std"] = np.std(np.array(df[i]))
-
+                statistics_dic["variance"] = np.var(np.array(df[i]))
+                statistics_dic["median"] = np.median(np.array(df[i]))
         return statistics_dic
+
