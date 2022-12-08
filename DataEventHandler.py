@@ -38,9 +38,8 @@ class DataEventHandler:
     def set_current_columns(self, columns):
         self.dataset.set_current_columns(columns)
 
-    def get_statistics_for_data(self, data):
+    def get_statistics_for_data(self, data, df):
         statistics_dic = {}
-        df = self.dataset.get_dataframe()
         for i in df:
             if i == data:
                 statistics_dic["mean"] = np.mean(np.array(df[i]))

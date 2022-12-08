@@ -126,19 +126,26 @@ class UIHandler(tk.Tk):
         self.replot()
 
     def self_description_button_clicked_event(self):
-        data = self.dataEventHandler.get_statistics_for_data(self.variable.get())
+
+        df = self.dataEventHandler.get_dataset()
+        start = self.agg_entry_one.get()
+        end = self.agg_entry_two.get()
+
+        if str(start) != "" and str(end) != "":
+            data = self.dataEventHandler.get_statistics_for_data(self.variable.get(), df[(df['Datetime (UTC)'] > start) & (df['Datetime (UTC)'] < end)])
+        else:
+            data = self.dataEventHandler.get_statistics_for_data(self.variable.get(), df)
+
         text_str = "Data description for: " + str(self.variable.get()) + "\n" + "Mean: " + str(data['mean']) \
                    + "\n" + "Std dev: " + str(data["std"]) + "\n" + "Variance: " + str(data["variance"]) + "\n" \
                    + "Median: " + str(data["median"])
+
         self.description_label.config(text=text_str)
 
 
     def self_correlation_button_clicked_event(self):
         df = self.dataEventHandler.get_dataset()
-        print(df)
-        print(self.correlation_option_menu.get(0))
-        print(np.array(df[self.correlation_option_menu.get(0)]))
-        cor = np.correlate(np.array(df[self.correlation_option_menu.get(0)]), np.array(df[self.correlation_option_menu.get(1)]))
+        cor = df[self.correlation_option_menu.get(0)].corr(df[self.correlation_option_menu.get(1)])
         self.corr_value_label = ttk.Label(self.frame5, text=str(cor))
         self.corr_value_label.pack()
 
@@ -178,7 +185,7 @@ class UIHandler(tk.Tk):
         self.correlation_option_menu.pack()
         self.correlation_button = ttk.Button(self.frame5, text="Get Correlation", command=self.self_correlation_button_clicked_event)
         self.correlation_button.pack()
-        self.description_label_agg = ttk.Label(self.frame4, text="Aggregate by date: (Enter in form mm-dd-yyyy until mm-dd-yyyy)")
+        self.description_label_agg = ttk.Label(self.frame4, text="Aggregate by date: (Enter in form yyyy-mm-dd until yyyy-mm-dd)")
         self.description_label_agg.pack()
         self.agg_entry_one = ttk.Entry(self.frame4, width=10)
         self.agg_entry_one.pack()
